@@ -12,6 +12,8 @@ module Bitgo
       COINS = [
         COIN_BTC  = 'btc',  # Bitcoin Production  Production
         COIN_TBTC = 'tbtc', # Bitcoin Testnet3  Test
+        COIN_BCH  = 'bch',  # Bitcoin Cash Production
+        COIN_TBCH = 'tbch', # Bitcoin Cash Test
         COIN_ETH  = 'eth',  # Ethereum Production Production
         COIN_TETH = 'teth', # Ethereum Kovan Testnet  Test
         COIN_XRP  = 'xrp',  # Ripple Production Production
