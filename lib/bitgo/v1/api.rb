@@ -21,7 +21,8 @@ module Bitgo
         call :get, '/user/session'
       end
 
-      # Get a token for first-party access to the BitGo API. First-party access is only intended for users accessing their own BitGo accounts.
+      # Get a token for first-party access to the BitGo API. First-party access is only
+      # intended for users accessing their own BitGo accounts.
       # For 3rd party access to the BitGo API on behalf of another user, please see Partner Authentication.
       def login(email:, password:, otp:)
         login_params = {
@@ -36,7 +37,8 @@ module Bitgo
         call :post, '/user/login', login_params, parse_response_as_json, with_auth_token
       end
 
-      # Get a token for first-party access to the BitGo API. First-party access is only intended for users accessing their own BitGo accounts.
+      # Get a token for first-party access to the BitGo API. First-party access is only intended for
+      # users accessing their own BitGo accounts.
       # For 3rd party access to the BitGo API on behalf of another user, please see Partner Authentication.
       def logout
         call :get, '/user/logout'
@@ -72,7 +74,9 @@ module Bitgo
 
       # Bitgo express function
       # Client-side function to create a new keychain.
-      # Optionally, a single parameter, 'seed’, may be provided which uses a deterministic seed to create your keychain. The seed should be an array of numbers at least 32 elements long. Calling this function with the same seed will generate the same BIP32 keychain.
+      # Optionally, a single parameter, 'seed’, may be provided which uses a deterministic seed
+      # to create your keychain. The seed should be an array of numbers at least 32 elements long.
+      # Calling this function with the same seed will generate the same BIP32 keychain.
       def create_keychain(seed: nil)
         if seed.present?
           seed.scan(/../).map(&:hex)
@@ -120,6 +124,7 @@ module Bitgo
         call :get, '/wallet'
       end
 
+      # rubocop:disable Metrics/LineLength
       # wallet_simple_create
       #
       # Note: Bitcoin Express API, will only work on Bitcoin Express Endpoint
@@ -191,15 +196,22 @@ module Bitgo
       #     },
       #            "warning" => "Be sure to backup the backup keychain -- it is not stored anywhere else!"
       # }
+      # rubocop:enable Metrics/LineLength
       def simple_create_wallet(passphrase:, label:)
         call :post, '/wallets/simplecreate', passphrase: passphrase, label: label
       end
 
-      # This API creates a new wallet for the user. The keychains to use with the new wallet must be registered with BitGo prior to using this API.
-      # BitGo currently only supports 2-of-3 (e.g. m=2 and n=3) wallets. The third keychain, and only the third keychain, must be a BitGo key.
+      # This API creates a new wallet for the user. The keychains to use with the new wallet must be
+      # registered with BitGo prior to using this API.
+      # BitGo currently only supports 2-of-3 (e.g. m=2 and n=3) wallets. The third keychain,
+      # and only the third keychain, must be a BitGo key.
       # The first keychain is by convention the user key, with it’s encrypted xpriv is stored on BitGo.
-      # BitGo wallets currently are hard-coded with their root at m/0/0 across all 3 keychains (however, older legacy wallets may use different key paths). Below the root, the wallet supports two chains of addresses, 0 and 1. The 0-chain is for external receiving addresses, while the 1-chain is for internal (change) addresses.
-      # The first receiving address of a wallet is at the BIP32 path m/0/0/0/0, which is also the ID used to refer to a wallet in BitGo’s system. The first change address of a wallet is at m/0/0/1/0.
+      # BitGo wallets currently are hard-coded with their root at m/0/0 across all 3 keychains
+      # (however, older legacy wallets may use different key paths). Below the root, the wallet supports two
+      # chains of addresses, 0 and 1. The 0-chain is for external receiving addresses,
+      # while the 1-chain is for internal (change) addresses.
+      # The first receiving address of a wallet is at the BIP32 path m/0/0/0/0, which is also the ID used
+      # to refer to a wallet in BitGo’s system. The first change address of a wallet is at m/0/0/1/0.
       #
       # label: string  (Required)  A label for this wallet
       # m: number  (Required)  The number of signatures required to redeem (must be 2)
@@ -213,7 +225,8 @@ module Bitgo
         call :post, '/wallet', wallet_params
       end
 
-      # Lookup wallet information, returning the wallet model including balances, permissions etc. The ID of a wallet is its first receiving address (/0/0)
+      # Lookup wallet information, returning the wallet model including balances, permissions etc.
+      # The ID of a wallet is its first receiving address (/0/0)
       #
       # Response:
       # id        id of the wallet (also the first receiving address)
@@ -234,9 +247,12 @@ module Bitgo
         call :get, '/wallet/' + wallet_id + '/addresses'
       end
 
-      # Creates a new address for an existing wallet. BitGo wallets consist of two independent chains of addresses, designated 0 and 1.
-      # The 0-chain is typically used for receiving funds, while the 1-chain is used internally for creating change when spending from a wallet.
-      # It is considered best practice to generate a new receiving address for each new incoming transaction, in order to help maximize privacy.
+      # Creates a new address for an existing wallet. BitGo wallets consist of
+      # two independent chains of addresses, designated 0 and 1.
+      # The 0-chain is typically used for receiving funds, while the 1-chain is used
+      # internally for creating change when spending from a wallet.
+      # It is considered best practice to generate a new receiving address for each new
+      # incoming transaction, in order to help maximize privacy.
       def create_address(wallet_id:, chain:)
         call :post, '/wallet/' + wallet_id + '/address/' + chain
       end
@@ -256,11 +272,14 @@ module Bitgo
       ###############
       # Webhook APIs
       ###############
-      # Adds a Webhook that will result in a HTTP callback at the specified URL from BitGo when events are triggered. There is a limit of 5 Webhooks of each type per wallet.
+      # Adds a Webhook that will result in a HTTP callback at the specified URL from BitGo when
+      #   events are triggered. There is a limit of 5 Webhooks of each type per wallet.
       #
       # type        string  (Required)  type of Webhook, e.g. transaction
       # url        string  (Required)  valid http/https url for callback requests
-      # numConfirmations  integer  (Optional)  number of confirmations before triggering the webhook. If 0 or unspecified, requests will be sent to the callback endpoint will be called when the transaction is first seen and when it is confirmed.
+      # numConfirmations  integer  (Optional)  number of confirmations before triggering the webhook.
+      # If 0 or unspecified, requests will be sent to the callback endpoint will be called when the
+      # transaction is first seen and when it is confirmed.
       def add_webhook(wallet_id:, type:, url:, confirmations:)
         add_webhook_params = {
           type: type,
@@ -294,7 +313,8 @@ module Bitgo
         call :post, '/decrypt', input: input, password: password
       end
 
-      # Client-side function to verify that a given string is a valid Bitcoin Address. Supports both v1 addresses (e.g. “1…”) and P2SH addresses (e.g. “3…”).
+      # Client-side function to verify that a given string is a valid Bitcoin Address.
+      # Supports both v1 addresses (e.g. “1…”) and P2SH addresses (e.g. “3…”).
       def verify_address(address:)
         verify_address_params = {
           address: address
@@ -339,9 +359,7 @@ module Bitgo
         request.add_field('Content-Type', 'application/json')
 
         # Add authentication header
-        if with_auth_token == true && @session_token.nil? == false
-          request.add_field('Authorization', 'Bearer ' + @session_token)
-        end
+        request.add_field('Authorization', 'Bearer ' + @session_token) if with_auth_token == true && @session_token.nil? == false
 
         response = http.request(request)
 
@@ -353,9 +371,7 @@ module Bitgo
             raise ApiError, "Error Parsing Bitgo's response as JSON: #{e} , Bitgo response: #{response.body}"
           end
 
-          if json_resp.is_a?(Hash) && json_resp['error'].nil? == false
-            raise ApiError, json_resp['error']
-          end
+          raise ApiError, json_resp['error'] if json_resp.is_a?(Hash) && json_resp['error'].nil? == false
 
           return json_resp
         else

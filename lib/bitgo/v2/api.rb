@@ -37,7 +37,10 @@ module Bitgo
 
       # Bitgo express function
       # Client-side function to create a new keychain.
-      # Optionally, a single parameter, 'seed’, may be provided which uses a deterministic seed to create your keychain. The seed should be an array of numbers at least 32 elements long. Calling this function with the same seed will generate the same BIP32 keychain.
+      # Optionally, a single parameter, 'seed’, may be provided which uses a
+      # deterministic seed to create your keychain. The seed should be an array of
+      # numbers at least 32 elements long. Calling this function with the same seed will
+      # generate the same BIP32 keychain.
       def create_keychain(seed: nil, coin: COIN_BTC)
         validate_coin!(coin)
         if seed.present?
@@ -82,7 +85,8 @@ module Bitgo
         call :post, "/#{coin}/wallet", args
       end
 
-      # Lookup wallet information, returning the wallet model including balances, permissions etc. The ID of a wallet is its first receiving address (/0/0)
+      # Lookup wallet information, returning the wallet model including balances, permissions etc.
+      # The ID of a wallet is its first receiving address (/0/0)
       #
       # Response:
       # id        id of the wallet (also the first receiving address)
@@ -126,11 +130,14 @@ module Bitgo
       # Webhook APIs
       ###############
 
-      # Adds a Webhook that will result in a HTTP callback at the specified URL from BitGo when events are triggered. There is a limit of 5 Webhooks of each type per wallet.
+      # Adds a Webhook that will result in a HTTP callback at the specified URL from BitGo when events
+      # are triggered. There is a limit of 5 Webhooks of each type per wallet.
       #
       # type        string  (Required)  type of Webhook, e.g. transaction
       # url       string  (Required)  valid http/https url for callback requests
-      # numConfirmations  integer (Optional)  number of confirmations before triggering the webhook. If 0 or unspecified, requests will be sent to the callback endpoint will be called when the transaction is first seen and when it is confirmed.
+      # numConfirmations  integer (Optional)  number of confirmations before triggering the webhook.
+      # If 0 or unspecified, requests will be sent to the callback endpoint will be called
+      # when the transaction is first seen and when it is confirmed.
       def add_webhook(wallet_id:, type:, url:, confirmations: nil, coin: COIN_BTC)
         validate_coin!(coin)
         add_webhook_params = {
