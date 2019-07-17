@@ -1,8 +1,8 @@
+# frozen_string_literal: true
+
 module Bitgo
   module V2
-
     class Api < Bitgo::V1::Api
-
       attr_accessor :session_token
 
       TEST = 'https://test.bitgo.com/api/v2'
@@ -19,8 +19,8 @@ module Bitgo
         COIN_LTC  = 'ltc',  # Litecoin Production Production
         COIN_TLTC = 'tltc', # Litecoin Testnet4 Test
         COIN_RMG  = 'rmg',  # Royal Mint Gold Production  Production
-        COIN_TRMG = 'trmg', # Royal Mint Gold Testnet Test
-      ]
+        COIN_TRMG = 'trmg' # Royal Mint Gold Testnet Test
+      ].freeze
 
       def initialize(end_point = LIVE)
         @end_point = end_point
@@ -44,15 +44,15 @@ module Bitgo
           seed.scan(/../).map(&:hex)
           [seed].pack('H*').unpack('C*')
           seed_arr = [seed].pack('H*').bytes.to_a
-          call :post, "/#{coin}/keychain/local", { seed: seed_arr }
+          call :post, "/#{coin}/keychain/local", seed: seed_arr
         else
           call :post, "/#{coin}/keychain/local"
         end
       end
 
-      def add_keychain(xpub: xpub, encrypted_xprv: encrypted_xprv, coin: COIN_BTC)
+      def add_keychain(xpub:, encrypted_xprv:, coin: COIN_BTC)
         validate_coin!(coin)
-        call :post, "/#{coin}/keychain", { xpub: xpub, encrypted_xprv: encrypted_xprv }
+        call :post, "/#{coin}/keychain", xpub: xpub, encrypted_xprv: encrypted_xprv
       end
 
       def create_bitgo_keychain(coin: COIN_BTC)
@@ -120,7 +120,7 @@ module Bitgo
         call :post, "/#{coin}/wallet/#{wallet_id}/address/"
       end
 
-      alias :add_address :create_address
+      alias add_address create_address
 
       ###############
       # Webhook APIs
@@ -131,7 +131,7 @@ module Bitgo
       # type        string  (Required)  type of Webhook, e.g. transaction
       # url       string  (Required)  valid http/https url for callback requests
       # numConfirmations  integer (Optional)  number of confirmations before triggering the webhook. If 0 or unspecified, requests will be sent to the callback endpoint will be called when the transaction is first seen and when it is confirmed.
-      def add_webhook(wallet_id:, type: type, url: url, confirmations: confirmations, coin: COIN_BTC)
+      def add_webhook(wallet_id:, type:, url:, confirmations: nil, coin: COIN_BTC)
         validate_coin!(coin)
         add_webhook_params = {
           type: type,
@@ -141,8 +141,7 @@ module Bitgo
         call :post, "/#{coin}/wallet/#{wallet_id}/webhooks", add_webhook_params
       end
 
-
-      def remove_webhook(wallet_id:, type: type, url: url, coin: COIN_BTC)
+      def remove_webhook(wallet_id:, type:, url:, coin: COIN_BTC)
         validate_coin!(coin)
         remove_webhook_params = {
           type: type,
@@ -156,10 +155,10 @@ module Bitgo
         call :get, "/#{coin}/wallet/#{wallet_id}/webhooks"
       end
 
-    private
+      private
 
       def validate_coin!(coin)
-        fail "param coin must be one of #{COINS.join(', ')}" unless COINS.include?(coin)
+        raise "param coin must be one of #{COINS.join(', ')}" unless COINS.include?(coin)
       end
     end
   end

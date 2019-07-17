@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bitgo/v1/api'
 require 'bitgo/v2/api'
 require 'uri'
